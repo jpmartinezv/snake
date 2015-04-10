@@ -21,12 +21,16 @@ int main()
 		exit(EXIT_FAILURE);
 	}
 
-	initscr();
 	nodelay(stdscr, true);
 	keypad(stdscr, true);
 	noecho();
 	curs_set(0);
-	
+	start_color();
+
+    init_pair(1, COLOR_BLACK, COLOR_RED);
+	init_pair(2, COLOR_BLACK, COLOR_GREEN);
+	init_pair(3, COLOR_BLACK, COLOR_BLUE);
+
 	while(1)
 	{
 		c = getch();
@@ -55,7 +59,7 @@ int main()
 		game.tick();
 		game.draw(p);
 		refresh();
-		usleep(250000);
+		usleep(150000);
 	}
 
 	return EXIT_SUCCESS;

@@ -31,13 +31,21 @@ bool Snake::tick( Field &field )
 			break;
 	}
 
+	/*
 	if ( p.first < 0 ||
 			p.first >= Field::WIDTH ||
 			p.second < 0 ||
 			p.second >= Field::HEIGHT)
 		return false;
+	*/
+	p.first = (p.first + Field::WIDTH) % Field::WIDTH;
+	p.second= (p.second + Field::HEIGHT) % Field::HEIGHT;
+
 	if ( field.block( p.first, p.second ) == Field::SNAKE_BLOCK )
 		return false;
+	if ( field.block( p.first, p.second ) == Field::WALL )
+		return false;
+	
 	blocks_.push_front(p);
 	if ( field.block( p.first, p.second ) != Field::FRUIT )
 	{

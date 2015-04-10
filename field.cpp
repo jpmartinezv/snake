@@ -6,7 +6,10 @@ Field::Field()
 {
 	for ( int y = 0; y < HEIGHT; ++y )
 		for ( int x = 0; x < WIDTH; ++x )
-			m_[ y ][ x ] = EMPTY;
+			if ( x == 0 or x == WIDTH- 1)
+				m_[ y ][ x ] = WALL;
+			else
+				m_[ y ][ x ] = EMPTY;
 	newFruit();
 }
 
@@ -17,7 +20,7 @@ void Field::setBlock( Type type, int x, int y )
 
 Field::Type Field::block( int x, int y ) const
 {
-	return m_[y][x];
+	return m_[ y ][ x ];
 }
 
 void Field::draw(Painter &p) const
@@ -35,6 +38,9 @@ void Field::draw(Painter &p) const
 					break;
 				case FRUIT:
 					p.circle( x, y );
+					break;
+				case WALL:
+					p.wall( x, y );
 					break;
 			}
 		}
