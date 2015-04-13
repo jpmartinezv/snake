@@ -19,9 +19,23 @@ enum MYKEYS {
    KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
 };
 
+   bool key[4] = { false, false, false, false };
+   bool redraw = true;
+   bool doexit = false;
+
+   ALLEGRO_DISPLAY *display = NULL;
+   ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+   ALLEGRO_TIMER *timer = NULL;
+
+   ALLEGRO_SAMPLE *sample=NULL;
+
+   vector<pair<int,int> > walls;
+
+void Run();
+
 int main(int argc, char **argv)
 {
-   vector<pair<int,int> > walls;
+
    char x;
    for ( int i = 0; i < 24; ++i )
    {
@@ -34,15 +48,9 @@ int main(int argc, char **argv)
       }
    }
 
-   ALLEGRO_DISPLAY *display = NULL;
-   ALLEGRO_EVENT_QUEUE *event_queue = NULL;
-   ALLEGRO_TIMER *timer = NULL;
 
-   ALLEGRO_SAMPLE *sample=NULL;
 
-   bool key[4] = { false, false, false, false };
-   bool redraw = true;
-   bool doexit = false;
+
 
    if(!al_init()) {
       fprintf(stderr, "failed to initialize allegro!\n");
@@ -117,6 +125,17 @@ int main(int argc, char **argv)
 
    al_play_sample(sample, 1.0, 0.0,1.0,ALLEGRO_PLAYMODE_LOOP,NULL);
 
+   Run();
+
+   al_destroy_timer(timer);
+   al_destroy_display(display);
+   al_destroy_event_queue(event_queue);
+
+   return 0;
+}
+
+void Run()
+{
    Game game;
    Painter p;
    game.update(walls);
@@ -200,15 +219,10 @@ int main(int argc, char **argv)
          al_clear_to_color(al_map_rgb(0,0,0));
 
          game.tick();
-		   game.draw(p);
+         game.draw(p);
 
          al_flip_display();
       }
    }
 
-   al_destroy_timer(timer);
-   al_destroy_display(display);
-   al_destroy_event_queue(event_queue);
-
-   return 0;
 }

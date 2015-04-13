@@ -3,7 +3,8 @@
 #include <cstdlib>
 
 Snake::Snake():
-	direction_(static_cast<Direction>(rand() % 4)),
+	//direction_(static_cast<Direction>(rand() % 4)),
+	direction_(static_cast<Direction>(2)),
 	lastMove_(direction_)
 {
 	blocks_.push_back( std::pair<int, int> 
