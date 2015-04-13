@@ -6,9 +6,9 @@ Field::Field()
 {
 	for ( int y = 0; y < HEIGHT; ++y )
 		for ( int x = 0; x < WIDTH; ++x )
-			if ( x == 0 or x == WIDTH- 1)
-				m_[ y ][ x ] = WALL;
-			else
+			//if ( x == 0 or x == WIDTH- 1)
+			//	m_[ y ][ x ] = WALL;
+			//else
 				m_[ y ][ x ] = EMPTY;
 	newFruit();
 }
