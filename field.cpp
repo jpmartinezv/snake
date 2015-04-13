@@ -1,16 +1,21 @@
 #include "field.hpp"
 #include "painter.hpp"
 #include <cstdlib>
+#include <vector>
 
 Field::Field()
 {
 	for ( int y = 0; y < HEIGHT; ++y )
 		for ( int x = 0; x < WIDTH; ++x )
-			//if ( x == 0 or x == WIDTH- 1)
-			//	m_[ y ][ x ] = WALL;
-			//else
 				m_[ y ][ x ] = EMPTY;
 	newFruit();
+}
+
+void Field::update(std::vector< std::pair<int, int> > walls)
+{
+	for ( int i = 0; i < walls.size(); ++i )
+		m_[ walls[i].first ][ walls[i].second ] = WALL;
+
 }
 
 void Field::setBlock( Type type, int x, int y )

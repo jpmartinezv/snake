@@ -1,6 +1,12 @@
 #include "game.hpp"
 #include "painter.hpp"
 #include "field.hpp"
+#include <vector>
+
+void Game::update(std::vector< std::pair<int, int> > walls)
+{
+	field_.update(walls);
+}
 
 void Game::tick()
 {

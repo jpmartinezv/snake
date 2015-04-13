@@ -1,7 +1,7 @@
 CPPFLAGS=-Wall -g
 OBJECTS=main.o painter.o field.o snake.o game.o
 TARGET=snake
-LDFLAGS=-L/usr/lib -lallegro -lallegro_audio -lallegro_color -lallegro_primitives -lallegro_main
+LDFLAGS=-L/usr/lib -lallegro -lallegro_audio -lallegro_color -lallegro_primitives -lallegro_acodec -lallegro_main
 
 
 %.o: %.cpp

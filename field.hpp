@@ -1,3 +1,4 @@
+#include <vector>
 #pragma once
 
 class Painter;
@@ -8,6 +9,7 @@ public:
 	enum { WIDTH = 32, HEIGHT = 24 };
 	enum Type { EMPTY, SNAKE_BLOCK, FRUIT, WALL};
 	Field();
+	void update(std::vector< std::pair<int, int> > walls);
 	void setBlock(Type type, int x, int y);
 	Type block(int x, int y) const;
 	void draw(Painter &) const;

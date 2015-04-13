@@ -31,13 +31,6 @@ bool Snake::tick( Field &field )
 			break;
 	}
 
-	/*
-	if ( p.first < 0 ||
-			p.first >= Field::WIDTH ||
-			p.second < 0 ||
-			p.second >= Field::HEIGHT)
-		return false;
-	*/
 	p.first = (p.first + Field::WIDTH) % Field::WIDTH;
 	p.second= (p.second + Field::HEIGHT) % Field::HEIGHT;
 
