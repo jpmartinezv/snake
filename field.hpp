@@ -5,7 +5,7 @@ class Painter;
 class Field
 {
 public:
-	enum { WIDTH = 50, HEIGHT = 50 };
+	enum { WIDTH = 32, HEIGHT = 24 };
 	enum Type { EMPTY, SNAKE_BLOCK, FRUIT, WALL};
 	Field();
 	void setBlock(Type type, int x, int y);

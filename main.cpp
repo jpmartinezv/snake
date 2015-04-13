@@ -1,66 +1,165 @@
+#include <stdio.h>
 #include <iostream>
-#include <cstdlib>
-#include <unistd.h>
-#include <curses.h>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_primitives.h>
 #include "painter.hpp"
 #include "game.hpp"
 
-Game game;
+using namespace std;
 
-int main()
+const float FPS = 10;
+const int SCREEN_W = 640;
+const int SCREEN_H = 480;
+
+enum MYKEYS {
+   KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT
+};
+
+int main(int argc, char **argv)
 {
-	WINDOW * mainwin;
-	
-	Painter p;
-	char c;
+   ALLEGRO_DISPLAY *display = NULL;
+   ALLEGRO_EVENT_QUEUE *event_queue = NULL;
+   ALLEGRO_TIMER *timer = NULL;
 
-	/*  Initialize ncurses  */
+   bool key[4] = { false, false, false, false };
+   bool redraw = true;
+   bool doexit = false;
 
-	if ( (mainwin = initscr()) == NULL ) {
-		fprintf(stderr, "Error initialising ncurses.\n");
-		exit(EXIT_FAILURE);
-	}
+   if(!al_init()) {
+      fprintf(stderr, "failed to initialize allegro!\n");
+      return -1;
+   }
 
-	nodelay(stdscr, true);
-	keypad(stdscr, true);
-	noecho();
-	curs_set(0);
-	start_color();
+   if(!al_install_keyboard()) {
+      fprintf(stderr, "failed to initialize the keyboard!\n");
+      return -1;
+   }
 
-    init_pair(1, COLOR_BLACK, COLOR_RED);
-	init_pair(2, COLOR_BLACK, COLOR_GREEN);
-	init_pair(3, COLOR_BLACK, COLOR_BLUE);
+   timer = al_create_timer(1.0 / FPS);
+   if(!timer) {
+      fprintf(stderr, "failed to create timer!\n");
+      return -1;
+   }
 
-	while(1)
-	{
-		c = getch();
-		switch ( c )
-		{
-			case 'q':
-				delwin(mainwin);
-				endwin();
-				refresh();
-				return EXIT_SUCCESS;
-			case 'd':
-				game.keyEvent(Snake::RIGHT);
-				break;
-			case 'w':
-				game.keyEvent(Snake::UP);
-				break;
-			case 'a':
-				game.keyEvent(Snake::LEFT);
-				break;
-			case 's':
-				game.keyEvent(Snake::DOWN);
-				break;
-			default:
-				break;
-		}
-		game.tick();
-		game.draw(p);
-		refresh();
-		usleep(150000);
-	}
+   display = al_create_display(SCREEN_W, SCREEN_H);
+   if(!display) {
+      fprintf(stderr, "failed to create display!\n");
+      al_destroy_timer(timer);
+      return -1;
+   }
 
-	return EXIT_SUCCESS;
+   al_clear_to_color(al_map_rgb(255, 0, 255));
+
+   al_set_target_bitmap(al_get_backbuffer(display));
+
+   event_queue = al_create_event_queue();
+   if(!event_queue) {
+      fprintf(stderr, "failed to create event_queue!\n");
+      al_destroy_display(display);
+      al_destroy_timer(timer);
+      return -1;
+   }
+
+   al_register_event_source(event_queue, al_get_display_event_source(display));
+
+   al_register_event_source(event_queue, al_get_timer_event_source(timer));
+
+   al_register_event_source(event_queue, al_get_keyboard_event_source());
+
+   al_clear_to_color(al_map_rgb(0,0,0));
+
+   al_flip_display();
+
+   al_start_timer(timer);
+
+   Game game;
+   Painter p;
+
+   while(!doexit)
+   {
+      ALLEGRO_EVENT ev;
+      al_wait_for_event(event_queue, &ev);
+
+      if(ev.type == ALLEGRO_EVENT_TIMER) {
+         if(key[KEY_UP] ) {
+            game.keyEvent(Snake::UP);
+         }
+
+         if(key[KEY_DOWN] ) {
+            game.keyEvent(Snake::DOWN);
+         }
+
+         if(key[KEY_LEFT] ) {
+            game.keyEvent(Snake::LEFT);
+         }
+
+         if(key[KEY_RIGHT] ) {
+            game.keyEvent(Snake::RIGHT);
+         }
+
+         redraw = true;
+      }
+      else if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+         break;
+      }
+      else if(ev.type == ALLEGRO_EVENT_KEY_DOWN) {
+         switch(ev.keyboard.keycode) {
+            case ALLEGRO_KEY_UP:
+               key[KEY_UP] = true;
+               break;
+
+            case ALLEGRO_KEY_DOWN:
+               key[KEY_DOWN] = true;
+               break;
+
+            case ALLEGRO_KEY_LEFT:
+               key[KEY_LEFT] = true;
+               break;
+
+            case ALLEGRO_KEY_RIGHT:
+               key[KEY_RIGHT] = true;
+               break;
+         }
+      }
+      else if(ev.type == ALLEGRO_EVENT_KEY_UP) {
+         switch(ev.keyboard.keycode) {
+            case ALLEGRO_KEY_UP:
+               key[KEY_UP] = false;
+               break;
+
+            case ALLEGRO_KEY_DOWN:
+               key[KEY_DOWN] = false;
+               break;
+
+            case ALLEGRO_KEY_LEFT:
+               key[KEY_LEFT] = false;
+               break;
+
+            case ALLEGRO_KEY_RIGHT:
+               key[KEY_RIGHT] = false;
+               break;
+
+            case ALLEGRO_KEY_ESCAPE:
+               doexit = true;
+               break;
+         }
+      }
+
+      if(redraw && al_is_event_queue_empty(event_queue)) {
+         redraw = false;
+
+         al_clear_to_color(al_map_rgb(0,0,0));
+
+         game.tick();
+		   game.draw(p);
+
+         al_flip_display();
+      }
+   }
+
+   al_destroy_timer(timer);
+   al_destroy_display(display);
+   al_destroy_event_queue(event_queue);
+
+   return 0;
 }
